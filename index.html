@@ -4,13 +4,12 @@
   <link rel="stylesheet" type="text/css" href="/css/styles.css">
   </head>
   <body>
-    <h1>Hello World</h1>
+    <h1 id="title">Hello World</h1>
     <p>I'm hosted with GitHub Pages.</p>
   </body>
   <script src="libs/jquery-1.4.2.min.js"></script>
   <script>
-    var $h = $('h1');
-    $h.text('This is not a test');
+    document.getElementById("title").innerHTML = "This is not a test";
   </script>
   <script src="/scripts/scripts.js" type="text/javascript"></script>
 </html>
