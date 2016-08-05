@@ -1,7 +1,7 @@
 $('#title').text("Is this a test?");
 
 $.ajax({
-	url: "https://github.com/projectpsu/projectpsu.github.io/blob/master/files/scholarshipinfo.json",
+	url: "https://projectpsu.github.io/files/scholarshipinfo.json",
 	datatype: "json",
 	success: function(data) {
 		var json = $.parseJSON(data);
