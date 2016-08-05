@@ -1,1 +1,1 @@
-document.getElementById("title").innerHTML = "This is not a test";
+$('#title').text("This is not a test");
