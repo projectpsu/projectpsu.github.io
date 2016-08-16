@@ -1,4 +1,352 @@
-h1 {
-  width: 100%;
-  text-align: center;
+/** {margin:0;padding:0;}*/
+
+.title {
+	width: 100%;
+	text-align: center;
 }
+
+#CurrentSeasonValue {
+	display: inline;
+}
+
+#ChangeYearPosition, #ChangeStatus {
+	display: none;
+}
+
+.main-menu {
+	/*visibility: hidden;*/
+	width: 100%;
+	border-top: 2px solid gray;
+	border-bottom: 2px solid gray;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	/*visibility: hidden;*/
+	/*display: none;*/
+}
+
+.menu {
+	font-size: 1.2em;
+	font-weight: bold;
+	cursor: -webkit-pointer;
+	cursor: pointer;
+}
+
+.filter-menu {
+	display: none;
+}
+
+li.selection {
+	display: inline-block;
+	/*display: none;*/
+	border: medium solid black;
+	padding: 2px 10px 2px 10px;
+	margin-left: 8px;
+	margin-right: 8px;
+	/*background: black;*/
+	color: white;
+	font-weight: bold;
+	background-color: #005695;
+	box-shadow:2px 2px 1px gray;
+	cursor: -webkit-pointer;
+	cursor: pointer;
+}
+
+#helpblock {
+	display: none;
+}
+
+.player.example {
+	width: auto;
+	height: auto;
+	padding: 2px 10px 2px 10px;
+}
+
+.spacing:after {
+	
+}
+
+.row:nth-of-type(odd) {
+	background: #eee;
+}
+
+/*.row:nth-of-type(even) div.player {
+	background: #eee;
+}*/
+
+.yr, .total {
+	font-size: 1.25em;
+	vertical-align: middle;
+}
+
+/* Original */
+.players, .incoming {
+	color: white;
+	display: block;
+	padding-left: 10px;
+	padding-right: 5px;
+	margin-left: 0;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	height: auto;
+	font-weight: bold;
+	vertical-align: top;
+	padding-bottom: 20px;
+	width: auto;
+}
+
+div.table, div.row {
+	height: auto;
+}
+/* Original */
+/*.player {
+	border: thin solid white;
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 2%;
+	padding-bottom: 2%;
+	margin-left: 0;
+	margin-top: 5px;
+	background-color: #005695;
+	box-shadow: 2px 2px 1px gray;
+	cursor: -webkit-grab;
+	cursor: grab;
+	width: 80%;
+	display: inline-block;
+	position: relative;
+}*/
+
+.player {
+	box-shadow: 4px 4px 2px gray;
+	padding: 2% 0% 2% 0%;
+	margin: 8px 0px 0px 0px;
+	background-color: white;
+	cursor: -webkit-pointer;
+	cursor: pointer;
+	display: inline-block;
+	position: relative;
+	border: medium solid black;
+	color: black;
+	width: 80%;
+	text-align: center;
+}
+
+.player[leaving] {
+	border: medium solid lightgray;
+	color: lightgray;
+}
+
+.rs-img {
+	display: inline-block;
+	height: 80%;
+}
+
+.player[used-rs] > .rs-img, .player[leaving] > .rs-img {
+	display: none;
+}
+
+.player[rs] > .rs-img {
+	background: red;
+}
+
+.player.example[gs] > .rs-img {
+	display: inline-block;
+	background: gray;
+}
+
+.incoming > .player[gs] > .rs-img, .player.example[gs] > .rs-img {
+	display: inline-block;
+	background: gray;
+}
+
+.incoming > .player > .rs-img {
+	display: none;
+}
+
+.rs-img > img {
+	min-height: 19px;
+	height: 20px;
+	vertical-align: top;
+}
+
+.add-player {
+	display: none;
+	border: medium solid blue;
+	cursor: -webkit-pointer;
+	cursor: pointer;
+}
+
+.position {
+	border-top: thin solid gray;
+	border-bottom: thin solid gray;
+	height: 1px;
+}
+
+/* Enable draggable */
+[draggable] {
+	user-select: none;
+}
+
+/* Testing */
+#table {
+	display: table;
+	width: 100%;
+}
+
+/* Converting to css table */
+.row {
+	display: table;
+	width: 100%;
+	margin: 0 auto;
+	border-right: 2px solid black;
+	border-bottom: 2px solid black;
+}
+
+.cell {
+	display: table-cell;
+	padding-left: 8px;
+	margin: 0 auto;
+	width: 14.3%;
+	text-align: center;
+	border-right: 2px solid gray;
+	border-left: 2px solid gray;
+	font-weight: bold;
+}
+
+.cell.pos-head {
+	vertical-align: middle;
+}
+
+.menu {
+	display: inline-block;
+	padding: 5px 20px 5px 20px;
+	position: relative;
+	border-top: 2px solid black;
+	border-bottom: 2px solid black;
+}
+
+.menu:after {
+	content: "";
+	display: table;
+}
+
+/*
+.menu:hover > ul {
+	display: inline-block;
+	text-align: center;
+	width: 180%;
+}
+*/
+
+/*
+.sub-menu > li {
+	text-align: center;
+	border-bottom: 2px solid white;
+	border-top: 2px solid white;
+	padding: 5px 5px 5px 5px;
+	width: auto;
+	color: white;
+}
+
+.sub-menu > li:hover {
+	cursor: -webkit-pointer;
+	cursor: pointer;
+}
+
+.sub-menu {
+	display: none;
+	position: absolute;
+	list-style-type: none;
+	background: #005695;
+	padding: 5px 5px 5px 5px;
+	top: 20px;
+	left: 0px;
+	box-shadow: 2px 2px 1px gray;
+	border: 1px solid white;
+}
+*/
+
+.menu-text {
+	display: inline;
+	font-size: 1.2em;
+}
+
+/*
+.menu-arrow  {
+	display: inline;
+	font-size: 1em;
+}
+*/
+
+.top-left {
+	/*font-size: 1.2em;*/
+	text-align: center;
+	vertical-align: middle;
+}
+
+/* Player sub-menu */
+/*
+.player:after {
+	content: "";
+	display: table;
+}
+
+.player:hover > ul {
+	display: inline-block;
+	text-align: center;
+	width: 100%;
+}
+
+.p-sub-menu {
+	display: none;
+	position: absolute;
+	list-style-type: none;
+	left: 100%;
+	top: -65%;
+	padding: 0px 0px 0px 0px;
+}
+
+.p-sub-menu > li:hover {
+	cursor: -webkit-pointer;
+	cursor: pointer;
+}
+
+li.redshirt, li.leaving {
+	border: 1px solid gray;
+	padding: 1px 1px 1px 1px;
+	background: white;
+	font-size: .8em;
+	color: black;
+	width: 20%;
+}*/
+/*
+.redshirt, .leaving {
+	display: none;
+	color: red;
+	background-color: white;
+	border-left: 2px solid black;
+	width: auto;
+	height: inherited;
+}
+
+/*.arrow {
+	display: inline;
+	color: black;
+	height: 20%;
+	font-size: 1.5em;
+}*/
+/*
+.rs {
+	display: inline;
+	color: red;
+	background-color: white;
+	height: auto;
+	border: medium solid red;
+	text-align: center;
+	padding: 2% 0.5% 2.5% 0.5%;
+	margin: 5px 0px 0px 0px;
+	width: auto;
+}
+
+.dot {
+	font-size: 1.5em;
+}*/
