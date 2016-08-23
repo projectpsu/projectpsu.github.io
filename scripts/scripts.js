@@ -1,4 +1,4 @@
-var allpositions = ['QB', 'RB', 'WR', 'TE', 'OT', 'OG / OC', 'DE', 'DT', 'LB', 'CB', 'S', 'K', 'P', 'LS'];
+invar allpositions = ['QB', 'RB', 'WR', 'TE', 'OT', 'OG / OC', 'DE', 'DT', 'LB', 'CB', 'S', 'K', 'P', 'LS'];
 
 var iFirstClass = $('div.cell.yr:first').index();
 var iFirstPos = $('div.cell.pos-head:first').parent().index();
@@ -251,6 +251,10 @@ function initiatePlayerChangeListeners(elem) {
 	elem.ondrop = function(event) {
 		drop(event);
 	};
+	
+	$plyr.on('taphold', function() {
+		alert('You tapped a player');
+	});
 }
 
 function clickPlayer($plyr) {
