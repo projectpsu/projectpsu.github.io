@@ -197,11 +197,6 @@ body {
 	font-size: 1em;
 }
 
-.row.headers:first-child {
-	min-width: 1200px;
-	width: 95%;
-}
-
 .row.headers:first-child .total-value-header, .row.headers:first-child .target-value-header {
 	font-size: 0.7em;
 	padding: 15% 0% 15% 0%;
@@ -209,8 +204,10 @@ body {
 
 .fixed {
 	border-bottom: 2px solid black;
+	min-width: 1200px;
 	position: fixed;
 	top: 0px;
+	width: 95%;
 	z-index: 100;
 }
 
