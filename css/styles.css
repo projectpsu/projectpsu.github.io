@@ -1,3 +1,5 @@
+/** {margin:0;padding:0;}*/
+
 body {
 	border-left: 2px solid gray;
 	border-right: 2px solid gray;
@@ -82,7 +84,6 @@ body {
 /* Sub Menus */
 .sub-menu {
 	background: white;
-	/*border-right: 2px solid black;*/
 	border-bottom: 2px solid black;
 	color: black;
 	display: none;
@@ -156,30 +157,8 @@ body {
 	width: 90%;
 }
 
-/*
-.player-example {
-	border: 2px solid black;
-	display: table;
-	padding: 4px 4px 10px 5px;
-	width: 45%;
-}
-
-.player-example-wrapper {
-	display: inline;
-	float: left;
-	width: 20%;
-}
-
-.example-text-wrapper {
-	display: inline;
-	float: left;
-	width: 80%;
-}
-*/
-
 /* Table */
 .table {
-	/*border-top: 2px solid black;*/
 	width: 100%;
 }
 
@@ -189,8 +168,6 @@ body {
 
 /* Rows */
 .row {
-	/*border-right: 2px solid black;*/
-	/*border-bottom: 2px solid black;*/
 	display: table;
 	margin: 0 auto;
 	width: 100%;
@@ -202,7 +179,6 @@ body {
 
 /* Manage row coloring of table */
 .row:nth-of-type(odd) {
-	/*background: #eee;*/
 	background: #EFF2FB;
 }
 
@@ -210,18 +186,27 @@ body {
 	background: white;
 }
 
-.row:nth-of-type(even) > .player {
-	/*border: 3px solid #0B0B61;*/
-}
-
 /* Header row */
 .row.headers > .cell {
 	font-size: 1.25em;
+	max-width: 14.3%;
+	overflow: hidden;
 	vertical-align: middle;
 }
 
 .row.headers > .top-left {
 	font-size: 1em;
+}
+
+.row.headers:first-child {
+	/*position: fixed;
+	top: 0px;*/
+	/*width: 100%;*/
+}
+
+.row.headers:first-child .total-value-header, .row.headers:first-child .target-value-header {
+	font-size: 0.7em;
+	padding: 15% 0% 15% 0%;
 }
 
 /* Total value cells */
@@ -291,7 +276,6 @@ body {
 .inner-cell.left {
 	border-right: 1px dashed black;
 }
-
 
 /* Player block */
 .player {
