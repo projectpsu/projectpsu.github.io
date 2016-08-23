@@ -34,10 +34,12 @@ initiateFileListeners();
 
 // Set all players to be draggable
 var $players = $('div.player:not(.example, .add-player)');
+//$players.draggable({containment: 'div.row.position'});
 
 // Set all div.players elements to accept drops
 var pgroups = 'div.players';
 var $playergroups = $(pgroups);
+//$playergroups.droppable({drop: drop});
 
 // Add listeners to both player elements and players drop zone elements
 initiateChangeListeners();
@@ -48,6 +50,13 @@ $('div.add-player').click(function() {addPlayerName(this);});
 // Add click listener to the target values
 $('div.position span.target-value').click(function () {
 	clickTargetValue(this);
+});
+
+// Fix column headers on top when scrolling
+var sticky = new Waypoint.Sticky({
+	element: $('div.row.headers:first-child')[0],
+	stuckClass: 'fixed',
+	direction: 'down'
 });
 
 var source;
@@ -521,6 +530,54 @@ function dragOver(e) {
 }
 
 function drop(e) {
+	e.preventDefault();
+	e.stopPropagation();
+	
+	var elemId = e.dataTransfer.getData("text");
+	var sourceCol = e.dataTransfer.getData("col");
+	var sourceRowIndex = e.dataTransfer.getData("row");
+	var target = $(e.target).closest(pgroups).get(0);
+	
+	var elem = document.getElementById(elemId);
+	
+	// Clean up
+	target.style.backgroundColor = "";
+	$(elem).removeAttr('id');
+	
+	// Situation: trying to drop a player on the Incoming class. If they are already on the roster,
+	// (i.e. sourceCol != iFirstClass), then can't do it. 
+	if ($(target).hasClass('incoming') && (sourceCol != iFirstClass && !$(elem).data('original-yr'))) {
+		return;
+	}
+
+	target.appendChild(elem);
+
+	if ($(target).hasClass('incoming')) {
+		var addp = $(target).find('.add-player');
+		$(target).append(addp);
+	}
+	
+	var targetCol = $(target).closest('div.cell').index();
+	var targetRow = $(target).closest('div.row').get(0);
+	
+	if (e.dataTransfer.getData('incoming') && targetCol != iFirstClass) {
+		$(elem).data('original-yr', 'incoming');
+	}
+	
+	var sourceRow = $('div.row').get(sourceRowIndex);
+	//var targetRow = $('div.row').get(targetRowIndex);
+
+	calcPlayersRow(sourceRow);
+	calcPlayersRow(targetRow);
+	
+	if (sourceCol != targetCol) {
+		calcPlayersColumn(sourceCol);
+		calcPlayersColumn(targetCol);
+	}
+}
+
+// Testing droppable interface
+function drop2(e, ui) {
 	e.preventDefault();
 	e.stopPropagation();
 	
