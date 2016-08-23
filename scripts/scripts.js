@@ -1,4 +1,6 @@
-invar allpositions = ['QB', 'RB', 'WR', 'TE', 'OT', 'OG / OC', 'DE', 'DT', 'LB', 'CB', 'S', 'K', 'P', 'LS'];
+$.event.special.tap.emitTapOnTaphold = false;
+
+var allpositions = ['QB', 'RB', 'WR', 'TE', 'OT', 'OG / OC', 'DE', 'DT', 'LB', 'CB', 'S', 'K', 'P', 'LS'];
 
 var iFirstClass = $('div.cell.yr:first').index();
 var iFirstPos = $('div.cell.pos-head:first').parent().index();
@@ -252,7 +254,14 @@ function initiatePlayerChangeListeners(elem) {
 		drop(event);
 	};
 	
-	$plyr.on('taphold', function() {
+	$plyr.on('tap', function() {
+		
+		alert('You tapped a player');
+	});
+	
+	$plyr.on('taphold', function(event) {
+		event.preventDefault();
+		event.stopImmediatePropagation();
 		alert('You tapped a player');
 	});
 }
