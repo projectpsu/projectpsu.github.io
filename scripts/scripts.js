@@ -1,3 +1,5 @@
+var allpositions = ['QB', 'RB', 'WR', 'TE', 'OT', 'OG / OC', 'DE', 'DT', 'LB', 'CB', 'S', 'K', 'P', 'LS'];
+
 var iFirstClass = $('div.cell.yr:first').index();
 var iFirstPos = $('div.cell.pos-head:first').parent().index();
 var NUM_CLASSES = $('div.cell.yr').length;
@@ -7,7 +9,8 @@ var iLastClass = NUM_CLASSES - iFirstClass + 1;
 var iLastPosition = NUM_POSITIONS + NUM_HEADERS - iFirstPos + 1;
 
 // Calculate column, row and team totals
-fullRecalculate();
+fullRecalculate();		// Note: does not calculate targets
+calcTargetTotal();		// Calculates the target values
 
 // Advance season on click
 $('#AdvanceSeason').click(function() {advanceSeason();});
@@ -17,14 +20,20 @@ $('#AddRecruits').click(function() {addRecruits();});
 
 $('#Filter').click(function() {clickFilter();});
 
+$('#FileManagement').click(function() {clickFileManagement();});
+
 // Add help click event listening
 $('#Help').click(function() {clickHelp();});
 
+// Add click event listening for help sections
+$('.help-header').click(function() {clickHelpHeader(this);});
+
 // Add filter event listening
 initiateFilterListeners();
+initiateFileListeners();
 
 // Set all players to be draggable
-var $players = $('div.player:not(.add-player)');
+var $players = $('div.player:not(.example, .add-player)');
 
 // Set all div.players elements to accept drops
 var pgroups = 'div.players';
@@ -36,36 +45,57 @@ initiateChangeListeners();
 // Add click listener to the add-player buttons
 $('div.add-player').click(function() {addPlayerName(this);});
 
+// Add click listener to the target values
+$('div.position span.target-value').click(function () {
+	clickTargetValue(this);
+});
+
 var source;
 
 function clickFilter() {
 	var $btn = $('#Filter');
+	turnOffSubMenus($btn.get(0));
 	var on = $btn.attr('on');
 	
 	// If help is on, turn it off
-	if ($('#Help').attr('on')) {
+	/*if ($('#Help').attr('on')) {
 		clickHelp();
-	}
+	}*/
 	
 	if (on) {
 		$btn.removeAttr('on');
-		$('.filter-menu').css('display', 'none');
+		$('#filter-menu').css('display', 'none');
 	} else {
 		$btn.attr('on', 'true');
-		$('.filter-menu').css('display', 'block');
+		$('#filter-menu').css('display', 'block');
 	}
 	
+}
+
+function clickFileManagement() {
+	var $btn = $('#FileManagement');
+	turnOffSubMenus($btn.get(0));
+	var on = $btn.attr('on');
+	
+	if (on) {		// If it's on, turn off
+		$btn.removeAttr('on');
+		$('#file-menu').css('display', 'none');
+	} else {		// If it's off, turn on
+		$btn.attr('on', 'true');
+		$('#file-menu').css('display', 'block');
+	}
 }
 
 function clickHelp() {
 	var $helpbtn = $('#Help');
 	var $helpblock = $('#helpblock');
+	turnOffSubMenus($helpbtn.get(0));
 	var helpon = $helpbtn.attr('on');
 	
 	// Check if filter is on, if so, turn it off
-	if ($('#Filter').attr('on')) {
+	/*if ($('#Filter').attr('on')) {
 		clickFilter();
-	}
+	}*/
 	
 	if (helpon) {
 		$helpbtn.removeAttr('on');
@@ -74,6 +104,25 @@ function clickHelp() {
 		$helpbtn.attr('on', 'true');
 		$helpblock.css('display', 'block');
 	}
+}
+
+function clickHelpHeader(btn) {
+	if ($(btn).attr('on')) {
+		$(btn).removeAttr('on');
+		$(btn).siblings('.help-content').css('display', 'none');
+	} else {
+		$(btn).attr('on', 'true');
+		$(btn).siblings('.help-content').css('display', 'block');
+	}
+}
+
+function turnOffSubMenus(btn) {
+	var selection = 'ul.main-menu > li.sub:not(#' + $(btn).attr('id') + ')'
+	$(selection).each(function() {
+		if ($(this).attr('on')) {
+			$(this).click();
+		}
+	});
 }
 
 function addRecruits() {
@@ -88,7 +137,7 @@ function addRecruits() {
 	}
 }
 
-function addPlayerName(target){
+function addPlayerName(target){	
 	var originaltext = $(target).text();
 	$(target).html(getPlayerInput());
 	var $in = $(target).find('input');
@@ -96,35 +145,50 @@ function addPlayerName(target){
 	$in.keydown(function(event) {
 		// If user presses Enter
 		if (event.keyCode == 13) {
-			var value = $in.val();		// Get current value of input box
-			$in.prop("selected", "false");	// De-select the input box
-			var e = getPlayerElement();		// Build a new player HTML element
-			var $test = $(e).html(value);	// Add content to the player element
-			var $par =  $(target).closest('div.players');	// Get the parent div.players element
-			$par.append($test.get(0));		// Append a new player element to the end of the div.players element
-			$par.append(target);			// Append the original add-player box the user clicked (keep it last)
-			if ($(target).attr('leaving')) {		// This shouldn't need to be done - remove listeners from add-player elements
-				$(target).removeAttr('leaving');
-			}
-			$(target).text(originaltext);
-
-			// Recalculate the total in the column
-			calcPlayersColumn($par.index());
-			
-			// Add listeners to the added element
-			initiatePlayerChangeListeners($test.get(0))
-		  } 
+			createPlayerFromInput(this);
+		} 
 		  
-		  if (event.keyCode == 27) {
-			  $in.prop("selected", "false");	// De-select the input box
-			  $(target).text(originaltext);
-		  }
+		if (event.keyCode == 27) {
+			$in.prop("selected", "false");	// De-select the input box
+			$(target).text(originaltext);
+		}
 	});
+	
+	$in.blur(function() {
+		// If input box loses focus, create player.
+		createPlayerFromInput(this);
+	});
+	
+	function createPlayerFromInput(inpt) {
+		var value = $in.val();		// Get current value of input box
+		$in.prop("selected", "false");	// De-select the input box
+		var e = getPlayerElement();		// Build a new player HTML element
+		if (value === '') {
+			value = 'Player Name';
+		}
+		var fullp = value + getShirtImageElement();
+		var $test = $(e).html(fullp);	// Add content to the player element
+		var $par =  $(target).closest('div.players');	// Get the parent div.players element
+		$par.append($test.get(0));		// Append a new player element to the end of the div.players element
+		$(target).text(originaltext);
+
+		// Recalculate the total in the column
+		calcPlayersColumn($par.index());
+		
+		// Add listeners to the added element
+		initiatePlayerChangeListeners($test.get(0))
+		
+		reorderAddPlayer(target);
+	};
 }
 
 function getPlayerElement() {
 	var elem = '<div class="player" draggable="true"></div>';
 	return elem;
+}
+
+function getShirtImageElement() {
+	return ' <div class="rs-img"><img src="./img/blackshirt_transparent.png">';
 }
 
 function getPlayerInput() {
@@ -155,6 +219,8 @@ function initiateChangeListeners() {
 }
 
 function initiatePlayerChangeListeners(elem) {
+	
+	
 	$plyr = $(elem);
 	
 	// Make player element draggable
@@ -215,15 +281,23 @@ function clickPlayer($plyr) {
 
 function initiateFilterListeners() {
 	$('#Filter-RS').click(function() {
-		filterRS(this);
+		var selection = 'div.player:not(.example, .add-player, [rs])';
+		filter(this, selection);
 	});
 	
 	$('#Filter-RSAvailable').click(function() {
-		filterRSAvailable(this);
+		var selection = 'div.player[used-rs]:not(.example, .add-player), div.incoming > div.player:not(.add-player)';
+		filter(this, selection);
 	});
 	
 	$('#Filter-UsedRS').click(function() {
-		filterUsedRS(this);
+		var selection = 'div.player:not(.example, .add-player, [used-rs])';
+		filter(this, selection);
+	});
+	
+	$('#Filter-Leaving').click(function() {
+		var selection = 'div.player:not(.example, .add-player, [leaving])';
+		filter(this, selection);
 	});
 	
 	$('#Filter-Off').click(function() {
@@ -235,44 +309,14 @@ function initiateFilterListeners() {
 // Filter functions
 
 // Turn off all players who are not using their RS this year.
-function filterRS(btn) {
+function filter(btn, selection) {
 	filterTurnAllOff(btn);
 	
 	if ($(btn).attr('on')) {
-		$('div.player:not(.example, .add-player, [rs])').css('display', 'inline-block');
+		$(selection).css('display', 'inline-block');
 		$(btn).removeAttr('on');
 	} else {
-		$('div.player:not(.example, .add-player, [rs])').css('display', 'none');
-		$(btn).attr('on', 'true');
-	}
-	
-	fullRecalculate();
-}
-
-// Turn off all players who do not have a redshirt available
-function filterRSAvailable(btn) {
-	filterTurnAllOff(btn);
-	
-	if ($(btn).attr('on')) {
-		$('div.player[used-rs]:not(.example, .add-player), div.incoming > div.player:not(.add-player)').css('display', 'inline-block');
-		$(btn).removeAttr('on');
-	} else {
-		$('div.player[used-rs]:not(.example, .add-player), div.incoming > div.player:not(.add-player)').css('display', 'none');
-		$(btn).attr('on', 'true');
-	}
-	
-	fullRecalculate();
-}
-
-// Turn off all players who have not already used their redshirt
-function filterUsedRS(btn) {
-	filterTurnAllOff(btn);
-	
-	if ($(btn).attr('on')) {
-		$('div.player:not(.example, .add-player, [used-rs])').css('display', 'inline-block');
-		$(btn).removeAttr('on');
-	} else {
-		$('div.player:not(.example, .add-player, [used-rs])').css('display', 'none');
+		$(selection).css('display', 'none');
 		$(btn).attr('on', 'true');
 	}
 	
@@ -281,9 +325,159 @@ function filterUsedRS(btn) {
 
 // Turn off all filters except for the button that was clicked
 function filterTurnAllOff(btn) {
-	var filtertext = 'ul.filter-menu > li:not(#' + $(btn).attr('id') + ')';
+	var filtertext = 'ul#filter-menu > li:not(#' + $(btn).attr('id') + ')';
 	$(filtertext).removeAttr('on');
 	$('div.player:not(.example, .add-player)').css('display', 'inline-block');
+}
+
+// File listeners
+function initiateFileListeners() {
+	$('#CreateFile').click(function() {
+		createFile();
+	});
+	
+	$('#upload').change(function() {
+		loadFile(this);
+	});
+}
+
+// File Functions
+
+var linkToFile = ''
+function createFile() {
+	var pjson = {};
+	
+	// Get current year value, save that
+	pjson['year'] = $('#CurrentSeasonValue').text();
+	
+	// Loop through each position
+	$('div.row.position').each(function() {
+		var $row = $(this);
+		var $plyrs = $row.find('div.player:not(.add-player)');
+		var pos = $row.find('div.pos-head').text();
+		
+		var posjson = {};
+		
+		var plyrarray = []
+		
+		var trgt = $row.find('span.inner-cell.target-value').text();
+		posjson['Target'] = trgt;
+		
+		
+		$plyrs.each(function() {
+			var $plyr = $(this);
+			var name = $plyr.text();
+			var rs = $plyr.attr('rs') ? true : false;
+			var usedrs = $plyr.attr('used-rs') ? true : false;
+			var leaving = $plyr.attr('leaving') ? true : false;
+			var col = $plyr.closest(pgroups).index();
+			var jp = {Name:name, RS:rs, UsedRS:usedrs, Leaving:leaving, Col:col}
+			plyrarray.push(jp);
+		});
+		
+		// Add plyrarray to posjson
+		posjson['Players'] = plyrarray;
+		
+		pjson[pos] = posjson;
+	});
+	
+	var s = JSON.stringify(pjson);
+	
+	linkToFile = makeTextFile(s);
+	
+	$('#DownloadFileLink').attr('href', linkToFile);
+	$('#DownloadFile').css('display', 'inline-block');
+}
+
+function getYrsEligibleFromIndex(index) {
+	return 5-index+iFirstClass
+}
+
+var textFile = null;
+function makeTextFile(text) {
+	var data = new Blob([text], {type: 'text/plain'});
+
+	// If we are replacing a previously generated file we need to
+	// manually revoke the object URL to avoid memory leaks.
+	if (textFile !== null) {
+	  window.URL.revokeObjectURL(textFile);
+	}
+
+	textFile = window.URL.createObjectURL(data);
+
+	return textFile;
+};
+
+function loadFile(btn) {
+	var file = btn.files[0];
+	var reader = new FileReader();
+	reader.onloadend = function(e) {
+		if (e.target.readyState == FileReader.DONE) {
+			var filetext = reader.result;
+			//console.log(filetext);
+			var allplayers = JSON.parse(filetext);
+			$('#CurrentSeasonValue').text(allplayers['year']);
+			setAllPlayers(allplayers);
+		}
+	}
+	reader.readAsText(file);
+}
+
+// reorders the add-player boxes to be at the bottom of their cells
+function reorderAddPlayers() {
+	$('div.add-player').each(function() {
+		reorderAddPlayer(this);
+	});
+}
+
+function reorderAddPlayer(elem) {
+	var $cell = $(elem).closest(pgroups);
+	$cell.append($(elem));
+}
+
+function setAllPlayers(allplayers) {
+	// First, remove all the players.
+	$('div.player:not(.add-player, .example)').remove();
+	
+	for (var pos in allplayers) {
+		if (allplayers.hasOwnProperty(pos)) {
+			var rowindex = allpositions.indexOf(pos);
+			
+			// Check if position is in the positional list
+			if (rowindex == -1) { continue; }
+			
+			// Get row for current position
+			var $row = $('div.row.position').eq(rowindex);
+			
+			// Set target value for current position
+			var trgt = allplayers[pos]['Target'];
+			$row.find('span.inner-cell.target-value').text(trgt);
+			
+			// Add players to current position
+			var curplayers = allplayers[pos]['Players'];
+			for (var i = 0, len = curplayers.length; i < len; i++) {
+				var p = curplayers[i];
+
+				var $cell = $row.find('div.cell:eq(' + p.Col + ')');
+				var e = getPlayerElement();		// Build a new player HTML element
+				var $plyr = $(e).html(p.Name + getShirtImageElement());	// Add content to the player element
+				
+				// Add any of the attributes that are true
+				p.RS ? $plyr.attr('rs', 'true') : '';
+				p.UsedRS ? $plyr.attr('used-rs', 'true') : '';
+				p.Leaving ? $plyr.attr('leaving', 'true') : '';
+				$cell.append($plyr);
+				
+				// Add listeners to the added element
+				initiatePlayerChangeListeners($plyr.get(0))
+			}
+		}
+	}
+	
+	reorderAddPlayers();
+	
+	fullRecalculate();
+	calcTargetTotal();
 }
 
 // Drag and drop functionality
@@ -302,7 +496,6 @@ function dragStart(e){
 	e.dataTransfer.setData("text", e.target.id);
 	e.dataTransfer.setData("col", $(e.target).closest(pgroups).index());
 	e.dataTransfer.setData("row", $(e.target).closest('div.row').index());
-	//e.datatransfer.setDragImage(e.target,0,0);
 	//specify allowed transfer
 	e.dataTransfer.effectAllowed = "move";
 
@@ -345,12 +538,15 @@ function drop(e) {
 	// Situation: trying to drop a player on the Incoming class. If they are already on the roster,
 	// (i.e. sourceCol != iFirstClass), then can't do it. 
 	if ($(target).hasClass('incoming') && (sourceCol != iFirstClass && !$(elem).data('original-yr'))) {
-		//target.style.backgroundColor = "";
-		//$(elem).removeAttr('id');
 		return;
 	}
 
 	target.appendChild(elem);
+
+	if ($(target).hasClass('incoming')) {
+		var addp = $(target).find('.add-player');
+		$(target).append(addp);
+	}
 	
 	var targetCol = $(target).closest('div.cell').index();
 	var targetRow = $(target).closest('div.row').get(0);
@@ -469,12 +665,72 @@ function calcPlayersColumn(index) {
 function calcValuesColumn() {
 	
 	// Update year total values
-	$('div.total-value.final').text($('div.players:not(.incoming) > div.player:visible').length.toString());
+	$('span.total-value.final ').text($('div.players:not(.incoming) > div.player:visible').length.toString());
 }
 
 function calcPlayersRow(row) {
 	var count = $(row).find('div.players:not(.incoming) > div.player:visible').length;
 
 	// Update year total values
-	$(row).find('div.total-value').text(count.toString());
+	$(row).find('span.total-value').text(count.toString());
+}
+
+function calcTargetTotal() {
+	var count = 0;
+	$('div.row.position span.inner-cell.target-value').each(function() {
+		count += parseInt($(this).text());
+	});
+	$('div.row.headers div.cell.total-value span.target-value').text(count);
+}
+
+// Target value adjustments
+function clickTargetValue(trgt) {
+	var on = $(trgt).attr('on');
+	
+	if (on) {
+		/*var num = $(trgt).find('input').val();
+		$(trgt).text(num);
+		$(trgt).removeAttr('on');*/
+	} else {
+		var curval = parseInt($(trgt).text());
+		var inpt = getTargetInput(curval);
+		$(trgt).html(inpt);
+		var $in = $(trgt).find('input');
+		$in.focus();
+		$in.select();
+		$(trgt).attr('on', 'true');
+		
+		// Attach listeners: blur (mouse click elsewhere), enter key, escape key
+		$in.keydown(function() {
+			// Enter key (submit number)
+			if (event.keyCode == 13) {
+				setTargetValue();
+			}
+			
+			// Escape key (cancel)
+			if (event.keyCode == 27) {
+				cancelSetTargetValue();
+			}
+		});
+		
+		$in.blur(function() {
+			setTargetValue();
+		});
+		
+		function setTargetValue() {
+			$(trgt).text($in.val());
+			$(trgt).removeAttr('on');
+			calcTargetTotal();
+		}
+		
+		function cancelSetTargetValue() {
+			$(trgt).text(curval);
+			$(trgt).removeAttr('on');
+		}
+	}
+}
+
+function getTargetInput(init) {
+	var elem = '<input type="number" max="20" min="0" step="1" value="' + init + '"></input>';
+	return elem;
 }
