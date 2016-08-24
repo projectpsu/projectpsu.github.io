@@ -71,9 +71,13 @@ var topHeadSticky = new Waypoint.Sticky({
 });
 
 // Testing mobile taphold
-$('div.full-title').on('taphold', function() {
+$(document).on('taphold', 'div.full-title', tapHoldHandler);
+function tapHoldHandler(event) {
 	alert('You have tap held this!');
-});
+}
+/*$('div.full-title').on('taphold', function() {
+	alert('You have tap held this!');
+})*/
 
 var source;
 
@@ -304,24 +308,39 @@ function clickPlayer($plyr) {
 }
 
 function initiateFilterListeners() {
+	$('#Filter-Offense').click(function() {
+		var selection = 'div.position.defense, div.position.sts';
+		filter(this, selection, 'table');
+	});
+	
+	$('#Filter-Defense').click(function() {
+		var selection = 'div.position.offense, div.position.sts';
+		filter(this, selection, 'table');
+	});
+	
+	$('#Filter-STs').click(function() {
+		var selection = 'div.position.offense, div.position.defense';
+		filter(this, selection, 'table');
+	});
+	
 	$('#Filter-RS').click(function() {
 		var selection = 'div.player:not(.example, .add-player, [rs])';
-		filter(this, selection);
+		filter(this, selection, 'inline-block');
 	});
 	
 	$('#Filter-RSAvailable').click(function() {
 		var selection = 'div.player[used-rs]:not(.example, .add-player), div.incoming > div.player:not(.add-player)';
-		filter(this, selection);
+		filter(this, selection, 'inline-block');
 	});
 	
 	$('#Filter-UsedRS').click(function() {
 		var selection = 'div.player:not(.example, .add-player, [used-rs])';
-		filter(this, selection);
+		filter(this, selection, 'inline-block');
 	});
 	
 	$('#Filter-Leaving').click(function() {
 		var selection = 'div.player:not(.example, .add-player, [leaving])';
-		filter(this, selection);
+		filter(this, selection, 'inline-block');
 	});
 	
 	$('#Filter-Off').click(function() {
@@ -333,11 +352,11 @@ function initiateFilterListeners() {
 // Filter functions
 
 // Turn off all players who are not using their RS this year.
-function filter(btn, selection) {
+function filter(btn, selection, disp) {
 	filterTurnAllOff(btn);
 	
 	if ($(btn).attr('on')) {
-		$(selection).css('display', 'inline-block');
+		$(selection).css('display', disp);
 		$(btn).removeAttr('on');
 	} else {
 		$(selection).css('display', 'none');
@@ -352,6 +371,7 @@ function filterTurnAllOff(btn) {
 	var filtertext = 'ul#filter-menu > li:not(#' + $(btn).attr('id') + ')';
 	$(filtertext).removeAttr('on');
 	$('div.player:not(.example, .add-player)').css('display', 'inline-block');
+	$('div.row.position').css('display', 'table');
 }
 
 // File listeners
