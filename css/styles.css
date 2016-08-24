@@ -314,6 +314,11 @@ body {
 	color: #a8a8a8;
 }
 
+.player#moving {
+	background-color: black;
+	color: white;
+}
+
 /* Shirt image */
 .rs-img {
 	display: inline-block;
