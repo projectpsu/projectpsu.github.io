@@ -1,3 +1,5 @@
+$.event.special.tap.emitTapOnTaphold = false;
+
 var allpositions = ['QB', 'RB', 'WR', 'TE', 'OT', 'OG / OC', 'DE', 'DT', 'LB', 'CB', 'S', 'K', 'P', 'LS'];
 
 var iFirstClass = $('div.cell.yr:first').index();
@@ -10,7 +12,7 @@ var iLastPosition = NUM_POSITIONS + NUM_HEADERS - iFirstPos + 1;
 
 // Calculate column, row and team totals
 fullRecalculate();		// Note: does not calculate targets
-calcTargetTotal();		// Calculates the target values
+calcTargetTotal(false);		// Calculates the target values
 
 // Advance season on click
 $('#AdvanceSeason').click(function() {advanceSeason();});
@@ -34,12 +36,10 @@ initiateFileListeners();
 
 // Set all players to be draggable
 var $players = $('div.player:not(.example, .add-player)');
-//$players.draggable({containment: 'div.row.position'});
 
 // Set all div.players elements to accept drops
 var pgroups = 'div.players';
 var $playergroups = $(pgroups);
-//$playergroups.droppable({drop: drop});
 
 // Add listeners to both player elements and players drop zone elements
 initiateChangeListeners();
@@ -50,6 +50,17 @@ $('div.add-player').click(function() {addPlayerName(this);});
 // Add click listener to the target values
 $('div.position span.target-value').click(function () {
 	clickTargetValue(this);
+});
+
+// Add click listener to document -- for mobile
+// If they have selected player to move, but click somewhere they shouldn't, remove player moving id
+$(document).mousedown(function(event) {
+	var $elem = $(event.target);
+	if ($('#moving').length > 0) {
+		if (!isValidDropTarget(event.target)) {
+			$('#moving').removeAttr('id');
+		}
+	}
 });
 
 // Fix column headers on top when scrolling
@@ -76,11 +87,6 @@ function clickFilter() {
 	var $btn = $('#Filter');
 	turnOffSubMenus($btn.get(0));
 	var on = $btn.attr('on');
-	
-	// If help is on, turn it off
-	/*if ($('#Help').attr('on')) {
-		clickHelp();
-	}*/
 	
 	if (on) {
 		$btn.removeAttr('on');
@@ -111,11 +117,6 @@ function clickHelp() {
 	var $helpblock = $('#helpblock');
 	turnOffSubMenus($helpbtn.get(0));
 	var helpon = $helpbtn.attr('on');
-	
-	// Check if filter is on, if so, turn it off
-	/*if ($('#Filter').attr('on')) {
-		clickFilter();
-	}*/
 	
 	if (helpon) {
 		$helpbtn.removeAttr('on');
@@ -225,14 +226,23 @@ function initiateChangeListeners() {
 	
 	// Now set listeners for drop zones
 	$playergroups.each(function() {
-		var elem = $(this).get(0);
-		elem.ondragover = function(event) {
+		
+		$(this).tap(function(event) {
+			// Check if mobile user trying to move any players
+			if ($('#moving').length > 0) {
+				this.style.backgroundColor = "darkgray";
+				mobileDrop(event, $(this));
+				this.style.backgroundColor = "";
+			}
+		});
+		
+		this.ondragover = function(event) {
 			dragOver(event);
 		};
-		elem.ondragleave = function(event) {
+		this.ondragleave = function(event) {
 			dragLeave(event);
 		};
-		elem.ondrop = function(event) {
+		this.ondrop = function(event) {
 			drop(event);
 		};
 	});
@@ -242,16 +252,31 @@ function initiatePlayerChangeListeners(elem) {
 
 	$plyr = $(elem);
 	
+	// A check for mobile if user wants to move player
+	var plyrheld = false;
+	
 	// Make player element draggable
 	$plyr.attr('draggable', 'true');
 	
 	// Testing mobile taphold
 	$plyr.on('taphold', function(event) {
-		dragStart(event);
+		plyrheld = true;
+		mobileDrag(event);
 	})
 	
 	// Change player status upon click
-	$plyr.click(function() {clickPlayer($(this));});
+	$plyr.click(function(event) {
+		// Check if mobile user is trying to move a player
+		if (!plyrheld) {
+			if ($('#moving').length > 0) {
+				mobileDrop(event, $(this).closest(pgroups))
+			} else {
+				clickPlayer($(this));
+			}
+		} else {
+			plyrheld = false;
+		}
+	});
 	
 	// Drag and drop listeners
 	elem.ondragstart = function(event) {
@@ -306,49 +331,50 @@ function clickPlayer($plyr) {
 function initiateFilterListeners() {
 	$('#Filter-Offense').click(function() {
 		var selection = 'div.position.defense, div.position.sts';
-		filter(this, selection, 'table');
+		filter(this, selection, 'table', true);
 	});
 	
 	$('#Filter-Defense').click(function() {
 		var selection = 'div.position.offense, div.position.sts';
-		filter(this, selection, 'table');
+		filter(this, selection, 'table', true);
 	});
 	
 	$('#Filter-STs').click(function() {
 		var selection = 'div.position.offense, div.position.defense';
-		filter(this, selection, 'table');
+		filter(this, selection, 'table', true);
 	});
 	
 	$('#Filter-RS').click(function() {
 		var selection = 'div.player:not(.example, .add-player, [rs])';
-		filter(this, selection, 'inline-block');
+		filter(this, selection, 'inline-block', false);
 	});
 	
 	$('#Filter-RSAvailable').click(function() {
 		var selection = 'div.player[used-rs]:not(.example, .add-player), div.incoming > div.player:not(.add-player)';
-		filter(this, selection, 'inline-block');
+		filter(this, selection, 'inline-block', false);
 	});
 	
 	$('#Filter-UsedRS').click(function() {
 		var selection = 'div.player:not(.example, .add-player, [used-rs])';
-		filter(this, selection, 'inline-block');
+		filter(this, selection, 'inline-block', false);
 	});
 	
 	$('#Filter-Leaving').click(function() {
 		var selection = 'div.player:not(.example, .add-player, [leaving])';
-		filter(this, selection, 'inline-block');
+		filter(this, selection, 'inline-block', false);
 	});
 	
 	$('#Filter-Off').click(function() {
 		filterTurnAllOff(this);
 		fullRecalculate();
+		calcTargetTotal(false);
 	});
 }
 
 // Filter functions
 
 // Turn off all players who are not using their RS this year.
-function filter(btn, selection, disp) {
+function filter(btn, selection, disp, trgtcalc) {
 	filterTurnAllOff(btn);
 	
 	if ($(btn).attr('on')) {
@@ -360,6 +386,7 @@ function filter(btn, selection, disp) {
 	}
 	
 	fullRecalculate();
+	calcTargetTotal(trgtcalc);
 }
 
 // Turn off all filters except for the button that was clicked
@@ -454,7 +481,6 @@ function loadFile(btn) {
 	reader.onloadend = function(e) {
 		if (e.target.readyState == FileReader.DONE) {
 			var filetext = reader.result;
-			//console.log(filetext);
 			var allplayers = JSON.parse(filetext);
 			$('#CurrentSeasonValue').text(allplayers['year']);
 			setAllPlayers(allplayers);
@@ -517,26 +543,26 @@ function setAllPlayers(allplayers) {
 	reorderAddPlayers();
 	
 	fullRecalculate();
-	calcTargetTotal();
+	calcTargetTotal(false);
 }
 
 // Drag and drop functionality
 function dragStart(e){
-	//start drag
+	// Start drag
 	source = e.target;
 	$(source).attr('id', 'moving');
 	
 	// Set original class if it's an incoming player
 	if ($(source).closest(pgroups).hasClass('incoming') || $(source).data('original-yr')) {
-		//$(source).data('original-yr', 'incoming');
+		$(source).data('original-yr', 'incoming');
 		e.dataTransfer.setData("incoming", 'true');
 	}
 
-	//set data
+	// Set data
 	e.dataTransfer.setData("text", e.target.id);
 	e.dataTransfer.setData("col", $(e.target).closest(pgroups).index());
 	e.dataTransfer.setData("row", $(e.target).closest('div.row').index());
-	//specify allowed transfer
+	// Specify allowed transfer
 	e.dataTransfer.effectAllowed = "move";
 
 }
@@ -607,17 +633,34 @@ function drop(e) {
 	}
 }
 
-// Testing droppable interface
-function drop2(e, ui) {
-	e.preventDefault();
+var movingprops = {};
+
+function mobileDrag(e) {
+	//start drag
+	source = e.target;
+	$(source).attr('id', 'moving');
+	
+	if ($(source).closest(pgroups).hasClass('incoming') || $(source).data('original-yr')) {
+		$(source).data('original-yr', 'incoming');
+		movingprops['incoming'] = true;
+	} else {
+		movingprops['incoming'] = false;
+	}
+	
+	movingprops['col'] = $(e.target).closest(pgroups).index();
+	movingprops['row'] = $(e.target).closest('div.row').index();
+
+}
+
+function mobileDrop(e, $par) {
 	e.stopPropagation();
 	
-	var elemId = e.dataTransfer.getData("text");
-	var sourceCol = e.dataTransfer.getData("col");
-	var sourceRowIndex = e.dataTransfer.getData("row");
-	var target = $(e.target).closest(pgroups).get(0);
+	var elemId = 'moving';
+	var sourceCol = movingprops['col'];
+	var sourceRowIndex = movingprops['row'];
+	var target = $par.get(0);
 	
-	var elem = document.getElementById(elemId);
+	var elem = $('#' + elemId).get(0);
 	
 	// Clean up
 	target.style.backgroundColor = "";
@@ -639,19 +682,29 @@ function drop2(e, ui) {
 	var targetCol = $(target).closest('div.cell').index();
 	var targetRow = $(target).closest('div.row').get(0);
 	
-	if (e.dataTransfer.getData('incoming') && targetCol != iFirstClass) {
+	if (movingprops['incoming'] && targetCol != iFirstClass) {
 		$(elem).data('original-yr', 'incoming');
 	}
 	
 	var sourceRow = $('div.row').get(sourceRowIndex);
-	//var targetRow = $('div.row').get(targetRowIndex);
 
+	// Recalculate the source and target rows
 	calcPlayersRow(sourceRow);
 	calcPlayersRow(targetRow);
 	
+	// If player's column changed, recalculate source & target columns as well
 	if (sourceCol != targetCol) {
 		calcPlayersColumn(sourceCol);
 		calcPlayersColumn(targetCol);
+	}
+	
+}
+
+function isValidDropTarget(droptrgt) {
+	if ($(droptrgt).hasClass('cell') && $(droptrgt).hasClass('players')) {
+		return true;
+	} else {
+		return false;
 	}
 }
 
@@ -675,7 +728,7 @@ function advanceSeason() {
 				}
 			});
 			
-		} else {	//Advance the players each a season if they are not Redshirting
+		} else {	// Advance the players each a season if they are not Redshirting
 		
 			var $p = $curplyrs.find('div.player:not([advanced])');
 			$p.each(function() {
@@ -751,7 +804,6 @@ function calcPlayersColumn(index) {
 }
 
 function calcValuesColumn() {
-	
 	// Update year total values
 	$('div.total-value.final span.total-value').text($('div.players:not(.incoming) > div.player:visible').length.toString());
 }
@@ -763,9 +815,15 @@ function calcPlayersRow(row) {
 	$(row).find('span.total-value').text(count.toString());
 }
 
-function calcTargetTotal() {
+function calcTargetTotal(visible) {
 	var count = 0;
-	$('div.row.position span.inner-cell.target-value').each(function() {
+	var s = '';
+	if (visible) {
+		s = 'div.row.position span.inner-cell.target-value:visible';
+	} else {
+		s = 'div.row.position span.inner-cell.target-value';
+	}
+	$(s).each(function() {
 		count += parseInt($(this).text());
 	});
 	$('div.row.headers div.cell.total-value span.target-value').text(count);
@@ -775,11 +833,7 @@ function calcTargetTotal() {
 function clickTargetValue(trgt) {
 	var on = $(trgt).attr('on');
 	
-	if (on) {
-		/*var num = $(trgt).find('input').val();
-		$(trgt).text(num);
-		$(trgt).removeAttr('on');*/
-	} else {
+	if (!on) {
 		var curval = parseInt($(trgt).text());
 		var inpt = getTargetInput(curval);
 		$(trgt).html(inpt);
@@ -808,7 +862,7 @@ function clickTargetValue(trgt) {
 		function setTargetValue() {
 			$(trgt).text($in.val());
 			$(trgt).removeAttr('on');
-			calcTargetTotal();
+			calcTargetTotal(true);
 		}
 		
 		function cancelSetTargetValue() {
