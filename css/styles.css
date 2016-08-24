@@ -8,6 +8,10 @@ body {
 	width: 95%;
 }
 
+.ui-loader {
+	display: none;
+}
+
 /* Title Heading*/
 .full-title {
 	/*background: white;*/
