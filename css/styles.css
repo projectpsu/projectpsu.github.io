@@ -322,7 +322,8 @@ body {
 /* Shirt image */
 .rs-img {
 	display: inline-block;
-	height: 80%;
+	height: 20px;
+	min-height: 19px;
 }
 
 .incoming > .player > .rs-img {
