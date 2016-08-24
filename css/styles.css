@@ -202,6 +202,14 @@ body {
 	padding: 15% 0% 15% 0%;
 }
 
+.row.headers:not(.yr-totals) {
+	background: #EFF2FB;
+}
+
+.row.headers.yr-totals {
+	background: white;
+}
+
 .fixed {
 	border-bottom: 2px solid black;
 	min-width: 1200px;
