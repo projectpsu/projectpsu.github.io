@@ -198,8 +198,8 @@ body {
 }
 
 .row.headers:first-child .total-value-header, .row.headers:first-child .target-value-header {
-	font-size: 0.7em;
-	padding: 15% 0% 15% 0%;
+	font-size: 0.9em;
+	padding: 7% 0% 7% 0%;
 }
 
 .row.headers:not(.yr-totals) {
