@@ -53,8 +53,19 @@ $('div.position span.target-value').click(function () {
 });
 
 // Fix column headers on top when scrolling
-var sticky = new Waypoint.Sticky({
-	element: $('div.row.headers:first-child')[0],
+var valueHeadSticky = new Waypoint.Sticky({
+	element: $('div.row.headers')[1],
+	stuckClass: 'fixed',
+	handler: function() {
+		var ht = $('div.row.headers:first-child').outerHeight(true);
+		$('div.row.headers.yr-totals.fixed').css('top', ht + 'px');
+	},
+	direction: 'down',
+	offset: $('div.row.headers:first-child').outerHeight(true)
+});
+
+var topHeadSticky = new Waypoint.Sticky({
+	element: $('div.row.headers')[0],
 	stuckClass: 'fixed',
 	direction: 'down'
 });
@@ -228,8 +239,7 @@ function initiateChangeListeners() {
 }
 
 function initiatePlayerChangeListeners(elem) {
-	
-	
+
 	$plyr = $(elem);
 	
 	// Make player element draggable
@@ -722,7 +732,7 @@ function calcPlayersColumn(index) {
 function calcValuesColumn() {
 	
 	// Update year total values
-	$('span.total-value.final ').text($('div.players:not(.incoming) > div.player:visible').length.toString());
+	$('div.total-value.final span.total-value').text($('div.players:not(.incoming) > div.player:visible').length.toString());
 }
 
 function calcPlayersRow(row) {
