@@ -71,13 +71,13 @@ var topHeadSticky = new Waypoint.Sticky({
 });
 
 // Testing mobile taphold
-$(document).on('taphold', 'div.full-title', tapHoldHandler);
+/*$(document).on('taphold', 'div.full-title', tapHoldHandler);
 function tapHoldHandler(event) {
 	alert('You have tap held this!');
-}
-/*$('div.full-title').on('taphold', function() {
+}*/
+$('div.full-title').on('taphold', function() {
 	alert('You have tap held this!');
-})*/
+})
 
 var source;
 
