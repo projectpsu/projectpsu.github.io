@@ -70,15 +70,6 @@ var topHeadSticky = new Waypoint.Sticky({
 	direction: 'down'
 });
 
-// Testing mobile taphold
-/*$(document).on('taphold', 'div.full-title', tapHoldHandler);
-function tapHoldHandler(event) {
-	alert('You have tap held this!');
-}*/
-$('div.full-title').on('taphold', function() {
-	alert('You have tap held this!');
-})
-
 var source;
 
 function clickFilter() {
@@ -253,6 +244,11 @@ function initiatePlayerChangeListeners(elem) {
 	
 	// Make player element draggable
 	$plyr.attr('draggable', 'true');
+	
+	// Testing mobile taphold
+	$plyr.on('taphold', function(event) {
+		alert('You have tap held a player!');
+	})
 	
 	// Change player status upon click
 	$plyr.click(function() {clickPlayer($(this));});
