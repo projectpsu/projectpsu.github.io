@@ -70,6 +70,11 @@ var topHeadSticky = new Waypoint.Sticky({
 	direction: 'down'
 });
 
+// Testing mobile taphold
+$('div.full-title').on('taphold', function() {
+	alert('You have tap held this!');
+});
+
 var source;
 
 function clickFilter() {
