@@ -247,7 +247,7 @@ function initiatePlayerChangeListeners(elem) {
 	
 	// Testing mobile taphold
 	$plyr.on('taphold', function(event) {
-		alert('You have tap held a player!');
+		dragStart(event);
 	})
 	
 	// Change player status upon click
