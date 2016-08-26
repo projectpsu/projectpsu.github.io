@@ -151,6 +151,14 @@ body {
 	cursor: pointer;
 }
 
+.help-header:before {
+	content: "+ ";
+}
+
+.help-header[on]:before {
+	content: "\2014  ";
+}
+
 .help-section > p:not(.help-header){
 	display: none;
 }
@@ -374,4 +382,19 @@ body {
 /* Enable draggable */
 [draggable] {
 	user-select: none;
+}
+
+/* Disclaimer at bottom of page */
+.disclaimer {
+	/*border: medium solid black;*/
+	background-color: #1C1C1C;
+	border-top: 2px solid black;
+	border-left: 1px solid gray;
+	border-right: 1px solid gray;
+	color: white;
+	margin: 0px 0px 0px 0px;
+	min-width: 1200px;
+	padding: 2% 0% 2% 0%;
+	text-align: center;
+	width: 100%;
 }
