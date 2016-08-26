@@ -96,6 +96,7 @@ function clickFilter() {
 		$('#filter-menu').css('display', 'block');
 	}
 	
+	resetStickies();
 }
 
 function clickFileManagement() {
@@ -110,6 +111,8 @@ function clickFileManagement() {
 		$btn.attr('on', 'true');
 		$('#file-menu').css('display', 'block');
 	}
+	
+	resetStickies();
 }
 
 function clickHelp() {
@@ -125,6 +128,8 @@ function clickHelp() {
 		$helpbtn.attr('on', 'true');
 		$helpblock.css('display', 'block');
 	}
+	
+	resetStickies();
 }
 
 function clickHelpHeader(btn) {
@@ -135,6 +140,8 @@ function clickHelpHeader(btn) {
 		$(btn).attr('on', 'true');
 		$(btn).siblings('.help-content').css('display', 'block');
 	}
+	
+	resetStickies();
 }
 
 function turnOffSubMenus(btn) {
@@ -143,6 +150,28 @@ function turnOffSubMenus(btn) {
 		if ($(this).attr('on')) {
 			$(this).click();
 		}
+	});
+}
+
+function resetStickies() {
+	valueHeadSticky.destroy();
+	topHeadSticky.destroy();
+	
+	valueHeadSticky = new Waypoint.Sticky({
+		element: $('div.row.headers')[1],
+		stuckClass: 'fixed',
+		handler: function() {
+			var ht = $('div.row.headers:first-child').outerHeight(true);
+			$('div.row.headers.yr-totals.fixed').css('top', ht + 'px');
+		},
+		direction: 'down',
+		offset: $('div.row.headers:first-child').outerHeight(true)
+	});
+
+	topHeadSticky = new Waypoint.Sticky({
+		element: $('div.row.headers')[0],
+		stuckClass: 'fixed',
+		direction: 'down'
 	});
 }
 
