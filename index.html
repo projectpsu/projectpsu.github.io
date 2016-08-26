@@ -39,20 +39,20 @@
 	<hr>
 	<p>General use is to <i>drag and drop</i> players to change position or eligibility. <i>Click</i> players to change status. Click the target values to change them. See possible statuses below. The other menu buttons are also explained below.</p>
 	<hr>
-	<div class="help-section"><p class="help-header"><b>+ Player Status</b></p>
+	<div class="help-section"><p class="help-header"><b>Player Status</b></p>
 	<div class="help-content"><p><div class="player example" used-rs="true">Player Name <div class="rs-img"><img src="./img/blackshirt_transparent.png"></div></div><span class="spacing">&nbsp;&nbsp;</span><span class="description">This is a player on the roster who has already used their redshirt year previously and will not redshirt this year. Also used to represent an incoming recruit.</span></p>
 	<p><div class="player example">Player Name <div class="rs-img"><img src="./img/blackshirt_transparent.png"></div></div><span class="spacing">&nbsp;&nbsp;</span>This is a player who is not redshirting this year, but has the redshirt available if needed. Only available for players currently on the roster.</p>
 	<p><div class="player example" rs="true">Player Name <div class="rs-img"><img src="./img/blackshirt_transparent.png"></div></div><span class="spacing">&nbsp;&nbsp;</span>This is a player who is redshirting (or expected to) during the current season. Only available for players currently on the roster.</p>
 	<p><div class="player example" gs="true">Player Name <div class="rs-img"><img src="./img/blackshirt_transparent.png"></div></div><span class="spacing">&nbsp;&nbsp;</span>This is an incoming recruit who is expected to grayshirt. Only an available option for incoming recruits.</p>
 	<p><div class="player example" leaving="true">Player Name <div class="rs-img"><img src="./img/blackshirt_transparent.png"></div></div><span class="spacing">&nbsp;&nbsp;</span>This is a player or recruit who is expected to leave sometime before the next season for whatever reason. Available for all players and incoming recruits.</p></div></div>
 	<hr>
-	<div class="help-section"><p class="help-header"><b>+ Advance Season</b></p><div class="help-content"><p>Moves all scholarships to the next season. Players who are redshirting do not lose a year of eligibility, but lose the option to RS next year. Players not redshirting with only 1 year of eligibility remaining are removed from the list. Players whose status is leaving are removed from the list. Incoming players are listed with four years of eligibility and using their redshirt. Grayshirt incoming recruits stay in the Incoming list. Everyone else is moved ahead, losing a year of eligibility.</p></div></div>
+	<div class="help-section"><p class="help-header"><b>Advance Season</b></p><div class="help-content"><p>Moves all scholarships to the next season. Players who are redshirting do not lose a year of eligibility, but lose the option to RS next year. Players not redshirting with only 1 year of eligibility remaining are removed from the list. Players whose status is leaving are removed from the list. Incoming players are listed with four years of eligibility and using their redshirt. Grayshirt incoming recruits stay in the Incoming list. Everyone else is moved ahead, losing a year of eligibility.</p></div></div>
 	<hr>
-	<div class="help-section"><p class="help-header"><b>+ Add Recruits</b></p><div class="help-content"><p>Click this to bring up the areas to add recruits. You can add recruits at any position. You can also move them onto the roster (e.g. for someone who transfers in). Click the blue box to enter a name. Enter key or clicking elsewhere will add the player, while Escape key cancels.</p></div></div>
+	<div class="help-section"><p class="help-header"><b>Add Recruits</b></p><div class="help-content"><p>Click this to bring up the areas to add recruits. You can add recruits at any position. You can also move them onto the roster (e.g. for someone who transfers in). Click the blue box to enter a name. Enter key or clicking elsewhere will add the player, while Escape key cancels.</p></div></div>
 	<hr>
-	<div class="help-section"><p class="help-header"><b>+ Filter</b></p><div class="help-content"><p>Opens a sub-menu. Filter players to make it easier to see who is redshirting, who has a redshirt available, who has used their redshirt already, and who is leaving.</p></div></div>
+	<div class="help-section"><p class="help-header"><b>Filter</b></p><div class="help-content"><p>Opens a sub-menu. Filter players to make it easier to see who is on offense, defense, or ST's. Also can identify who is redshirting, who has a redshirt available, who has used their redshirt already, and who is leaving.</p></div></div>
 	<hr>
-	<div class="help-section"><p class="help-header"><b>+ File Management</b></p><div class="help-content"><p>Opens a sub-menu. Allows you to create a "save" file (.json) of the current roster state. Can also upload a previously saved file. To save a file, click "Create File" in the sub-menu, then the "Download File" link will appear with the file to download.</p></div></div>
+	<div class="help-section"><p class="help-header"><b>File Management</b></p><div class="help-content"><p>Opens a sub-menu. Allows you to create a "save" file (.json) of the current roster state. Can also upload a previously saved file. To save a file, click "Create File" in the sub-menu, then the "Download File" link will appear with the file to download.</p></div></div>
 	<hr>
 </div>
 
@@ -364,17 +364,15 @@
 	<div class="cell total-value"><div class="cell-content"><span class="inner-cell total-value left">1</span><span class="inner-cell target-value">1</span></div></div>
 </div>
 </div>
+<div class="disclaimer">
+	projectpsu.github.io is a Penn State University fan web site and is in no way affiliated Penn State University, the NCAA, or its Properties or Organizations. This site is for informational and entertainment purposes only. projectpsu.github.io is not an official web site for the Pennsylvania State University.
+</div>
 
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="./scripts/jquery.waypoints.min.js"></script>
 <script src="./scripts/sticky.min.js"></script>
-<!--<script>
-	var jQuery_3_1_0 = $.noConflict(true);
-</script>-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-<!--<script src="./scripts/jquery-ui.min.js"></script>
-<script src="./scripts/jquery.ui.touch-punch.min.js"></script>-->
 <script>
 	$(document).bind("mobileinit", function(){
 		$.event.special.tap.emitTapOnTaphold = false;
