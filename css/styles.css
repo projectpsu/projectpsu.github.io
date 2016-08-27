@@ -322,7 +322,7 @@ body {
 	color: #a8a8a8;
 }
 
-.player#moving {
+.player#moving-mobile {
 	background-color: black;
 	color: white;
 }
