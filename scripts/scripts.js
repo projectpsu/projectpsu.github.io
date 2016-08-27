@@ -24,6 +24,8 @@ $('#Filter').click(function() {clickFilter();});
 
 $('#FileManagement').click(function() {clickFileManagement();});
 
+$('#StartOver').click(function() {clickStartOver();});
+
 // Add help click event listening
 $('#Help').click(function() {clickHelp();});
 
@@ -113,6 +115,10 @@ function clickFileManagement() {
 	}
 	
 	resetStickies();
+}
+
+function clickStartOver() {
+	location.reload();
 }
 
 function clickHelp() {
