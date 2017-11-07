@@ -1,9 +1,13 @@
 $.event.special.tap.emitTapOnTaphold = false;
 
 // Testing
-var testurl = 'https://localhost/img/scholarshipinfo.json';
-//var testurl = '../files/scholarshipinfo.json';
-var testjson = $.getJSON(testurl, function() {console.log('Resolved!');});
+//var testurl = 'https://localhost/img/scholarshipinfo.json';
+var testurl = '../files/scholarshipinfo.json';
+var testdata = {};
+var testjson = $.getJSON(testurl, function(data) {
+	testdata = data;
+	console.log(data);
+	});
 
 var allpositions = ['QB', 'RB', 'WR', 'TE', 'OT', 'OG / OC', 'DE', 'DT', 'LB', 'CB', 'S', 'K', 'P', 'LS'];
 
