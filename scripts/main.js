@@ -1,9 +1,9 @@
 $.event.special.tap.emitTapOnTaphold = false;
 
 // Testing
-//var testurl = 'https://localhost/img/scholarshipinfo.json';
+var testurl = 'https://localhost/img/scholarshipinfo.json';
 //var testurl = '../files/scholarshipinfo.json';
-//var testjson = $.getJSON(testurl, function() {console.log('Resolved!');});
+var testjson = $.getJSON(testurl, function() {console.log('Resolved!');});
 
 var allpositions = ['QB', 'RB', 'WR', 'TE', 'OT', 'OG / OC', 'DE', 'DT', 'LB', 'CB', 'S', 'K', 'P', 'LS'];
 
