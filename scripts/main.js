@@ -1,7 +1,7 @@
 $.event.special.tap.emitTapOnTaphold = false;
 
 // Testing
-var testurl = 'http://localhost/img/scholarshipinfo.json';
+var testurl = 'https://localhost/img/scholarshipinfo.json';
 //var testurl = '../files/scholarshipinfo.json';
 var testjson = $.getJSON(testurl, function() {
 		console.log('Resolved!');
